@@ -1,0 +1,7 @@
+## LAB - Hybrid
+192.168.56.10     server.cfr.example
+192.168.56.11     database.cfr.example
+192.168.56.20     ubuntu.cfr.example
+192.168.56.21     centos.cfr.example
+192.168.56.30     windows.cfr.example
+192.168.56.40     macosx.cfr.example
