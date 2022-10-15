@@ -1,0 +1,8 @@
+# General
+.vagrant/
+# k8s-ha/.vagrant
+# k3s/.vagrant
+
+# Log files (if you are creating logs in debug mode, uncomment this)
+# *.log
+

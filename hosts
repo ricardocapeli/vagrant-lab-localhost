@@ -5,3 +5,56 @@
 192.168.56.21     centos.cfr.example
 192.168.56.30     windows.cfr.example
 192.168.56.40     macosx.cfr.example
+
+
+192.168.56.50	master01.cfr.example
+192.168.56.51	master02.cfr.example
+192.168.56.52	master03.cfr.example
+192.168.56.53	worker01.cfr.example
+192.168.56.54	worker02.cfr.example
+192.168.56.55	worker03.cfr.example
+192.168.56.56   ansible.cfr.example
+192.168.56.49   loadbalancer.cfr.example
+
+192.168.56.50	master01
+192.168.56.51	master02
+192.168.56.52	master03
+192.168.56.53	worker01
+192.168.56.54	worker02
+192.168.56.55	worker03
+192.168.56.56   ansible
+192.168.56.49   loadbalancer
+
+192.168.56.50
+192.168.56.51
+192.168.56.52
+192.168.56.53
+192.168.56.54
+192.168.56.55
+192.168.56.56
+192.168.56.49
+
+192.168.56.50 ansible_ssh_pass=vagrant ansible_ssh_user=vagrant
+192.168.56.51 ansible_ssh_pass=vagrant ansible_ssh_user=vagrant
+192.168.56.52 ansible_ssh_pass=vagrant ansible_ssh_user=vagrant
+192.168.56.53 ansible_ssh_pass=vagrant ansible_ssh_user=vagrant
+192.168.56.54 ansible_ssh_pass=vagrant ansible_ssh_user=vagrant
+192.168.56.55 ansible_ssh_pass=vagrant ansible_ssh_user=vagrant
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_user=vagrant 
+ansible_ssh_pass=vagrant
+ansible_become=yes
+
+[masters]
+master01.cfr.example
+master02.cfr.example
+master03.cfr.example
+
+[workers]
+worker01.cfr.example
+worker02.cfr.example
+worker03.cfr.example
+
+# Intel PRO/1000 MT Desktop (82540EM)

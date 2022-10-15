@@ -1,0 +1,16 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: creating 'labbs' user
+      user: name=labbs append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: creating 'labbs' for passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'labbs ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: authorized keys for the labbs user
+      authorized_key: user=labbs key="{{item}}"
+      with_file:
+        - ~/.ssh/id_rsa.pub

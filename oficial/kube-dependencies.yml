@@ -1,0 +1,118 @@
+- name: Install dep  
+  hosts: all
+  become: yes
+  tasks:
+  - name: Reenable SWAP in fstab (1/2)
+    replace:
+      path: /etc/fstab
+      regexp: '^# (.+?\sswap\s+sw\s+.*)$'
+      replace: '\1'
+
+  - name: Enable SWAP (2/2)
+    shell: |
+       swapon -a
+
+  - name: Installing Prerequisites for Kubernetes
+    apt: 
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg2
+        - vim
+        - software-properties-common
+      state: present
+
+  - name: Add Docker’s official GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu xenial stable
+      state: present
+      filename: docker
+      mode: 0600      
+
+  - name: Install Docker Engine.
+    apt: 
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: present
+      
+  - name: Enable service docker, and enable persistently
+    service: 
+      name: docker
+      enabled: yes      
+ 
+  - name: Add Google official GPG key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+  - name: Add Kubernetes Repository
+    apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main 
+      state: present
+      filename: kubernetes
+      mode: 0600
+  - name: Installing Kubernetes Cluster Packages.
+    apt: 
+      name:
+        - kubeadm
+        - kubectl
+        - kubelet
+      state: present
+  - name: Enable service kubelet, and enable persistently
+    service: 
+      name: kubelet
+      enabled: yes
+
+  - name: APT-MARK
+    command: apt-mark hold kubelet kubeadm kubectl   
+
+  - name: Creating a daemon json
+    copy:
+     dest: "/etc/docker/daemon.json"
+     content: |
+       {
+       "exec-opts": ["native.cgroupdriver=systemd"],
+       "log-driver": "journald"
+       }
+  - name: restarting the docker
+    ansible.builtin.shell: |
+      systemctl daemon-reload
+      systemctl restart docker
+      systemctl restart kubelet
+
+  - name: Remove config containerd
+    command: rm /etc/containerd/config.toml
+
+  - name: Restarting the containerd
+    ansible.builtin.shell: |
+      systemctl restart containerd 
+
+
+- hosts: masters
+  become: yes
+  tasks:
+   - name: KUBELET_EXTRA_ARGS
+     shell: |
+            echo "KUBELET_EXTRA_ARGS='--node-ip=$(/sbin/ip -o -4 addr list ens192 | awk '{print $4}' | cut -d/ -f1)'" > /etc/default/kubelet
+
+   - name: install kubectl
+     apt:
+       name: kubectl
+       state: present
+       force: yes
+
+- hosts: all
+  become: yes
+  tasks:
+   - name: Reboot all the kubernetes nodes.
+     reboot:
+       post_reboot_delay: 10
+       reboot_timeout: 40
+       connect_timeout: 60
+       test_command: uptime

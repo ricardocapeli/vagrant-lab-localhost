@@ -1,0 +1,34 @@
+- hosts: master01.cfr.example
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command
+    - name: get certificate-key
+      shell: kubeadm init phase upload-certs --upload-certs
+      register: certs
+    - name: register join command
+      add_host: 
+        name: "master_host"
+        master_join_command: "{{ join_command.stdout }} --certificate-key {{ certs.stdout_lines[2]}}"
+- hosts: master02.cfr.example, master03.cfr.example
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: join cluster
+      shell: "{{ hostvars['master_host']['master_join_command'] }} --control-plane >> master_joined.txt"
+    
+    - name: create .kube directory
+      become: yes
+      become_user: vagrant
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
