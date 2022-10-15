@@ -78,9 +78,10 @@ ____
 
 ###
 
- 1 - Instalaro virtual box e o vagrant.
- 2 - No arquivo, caso nao deseje subir todas as maquinas basta comentar as linhas.
- 3 - Repare que para todas as maquinas, alem do ip interno inicializado por 192.168.x.x (dependento da configuracao da sua maquina esse IP pode ser outro) esta configurado para obter um IP da sua rede domestica. Isso foi feito para simular e facilitar alguns acessos.
+ 1 - Instalaro virtual box e o vagrant.</p>
+ 
+ 2 - No arquivo, caso nao deseje subir todas as maquinas basta comentar as linhas. </p>
+ 3 - Repare que para todas as maquinas, alem do ip interno inicializado por 192.168.x.x (dependento da configuracao da sua maquina esse IP pode ser outro) esta configurado para obter um IP da sua rede domestica. Isso foi feito para simular e facilitar alguns acessos.</p>
  4 - Para subir as maquinas basta executar:
 
  ```
@@ -91,7 +92,7 @@ ____
 
 
 
-###
+### apenas para rancher dashboard
 docker run -d -p 8080:80 -v ~/docker/rancher:/var/lib/rancher --restart=unless-stopped --network=rancher-network --name=rancher-server --privileged rancher/rancher
 
 docker network create rancher-network
